@@ -1,0 +1,301 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Email Triage Specifications",
+    "description": "The specification of the contract between the Enate Email Triage API an Adapter that communicates with a third-party technology.",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://enatedigitalworker.azure-api.net/EmailTriagePattern/v1"
+    }
+  ],
+  "paths": {
+    "/CategoryPrediction": {
+      "post": {
+        "summary": "Get Category Predictions",
+        "description": "Predices a category for a supplied email.",
+        "operationId": "getCategoryPredictions",
+        "requestBody": {
+          "description": "Email details to get the category predictions.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PacketCommunicationForEmailTriage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prediction successfully made and returned in response body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request has not been completed because it contains invalid data."
+          },
+          "401": {
+            "description": "The client request has not been completed because it lacks valid authentication credentials for the requested resource."
+          },
+          "500": {
+            "description": "Request Failed due to internal server error."
+          }
+        }
+      }
+    },
+    "/TestConfiguration": {
+      "post": {
+        "summary": "Test Configuration",
+        "description": "Tests that the configuration is valid and can be used to communicate with the third-party technology.",
+        "operationId": "testAdapterConfiguration",
+        "requestBody": {
+          "description": "Configuration details to test.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdapterConfigurationEntryResult"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Test was successful.",
+            "content": {
+              "application/json": {
+                "example": "True"
+              }
+            }
+          },
+          "400": {
+            "description": "The request has not been completed because it contains invalid data."
+          },
+          "401": {
+            "description": "The client request has not been completed because it lacks valid authentication credentials for the requested resource."
+          },
+          "500": {
+            "description": "Request Failed due to internal server error."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AdapterConfigurationEntryResult": {
+        "required": [
+          "Name",
+          "Value"
+        ],
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Name of the Configuration field."
+          },
+          "Value": {
+            "type": "object",
+            "description": "Value of the Configuration field."
+          }
+        },
+        "example": [
+          {
+            "Name": "Url",
+            "Value": "http://test"
+          },
+          {
+            "Name": "DataSet",
+            "Value": "MyDataSet"
+          },
+          {
+            "Name": "ProjectName",
+            "Value": "Project2"
+          },
+          {
+            "Name": "APIKey",
+            "Value": "MyAPIKeyValue"
+          },
+          {
+            "Name": "TransformTag",
+            "Value": "MyTransformTag"
+          }
+        ]
+      },
+      "PacketCommunicationForEmailTriage": {
+        "type": "object",
+        "properties": {
+          "AdapterId": {
+            "type": "string",
+            "description": "The unique ID of the Adapter.",
+            "format": "uuid"
+          },
+          "ConfigurationId": {
+            "type": "string",
+            "description": "The unique ID of the Configuration.",
+            "format": "uuid"
+          },
+          "Guid": {
+            "type": "string",
+            "description": "The unique ID of the object.",
+            "format": "uuid"
+          },
+          "PacketGUID": {
+            "type": "string",
+            "description": "The unique ID of the Packet.",
+            "format": "uuid"
+          },
+          "From": {
+            "type": "string",
+            "description": "From address of the communication."
+          },
+          "To": {
+            "type": "string",
+            "description": "To address of the communication."
+          },
+          "Subject": {
+            "type": "string",
+            "description": "Subject of the communication."
+          },
+          "Body": {
+            "type": "string",
+            "description": "Plain text of the communication."
+          },
+          "SentOn": {
+            "type": "string",
+            "description": "Email sent on date."
+          },
+          "AllowedCategories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of allowed categories in the format 'Category1\\Category2\\Category3'."
+          },
+          "EnateInstance": {
+            "$ref": "#/components/schemas/EnateIdentityResult"
+          }
+        },
+        "example": {
+          "AdapterId": "8e11ba9f-cc1d-4f7e-a8a3-cb7d83b3cf3c",
+          "ConfigurationId": "9b3db3d3-3a17-4a31-8c4a-95ab21b2f6d4",
+          "Guid": "92a5c5d5-1bfc-4a5d-b0c6-755cf6b04c6f",
+          "PacketGUID": "88b12291-1e24-4d5b-9e1f-5a5f5c5e3f3d",
+          "From": "sender@example.com",
+          "To": "recipient@example.com",
+          "Subject": "Sample Email",
+          "Body": "This is a sample email.",
+          "SentOn": "2023-03-16T10:00:00Z",
+          "AllowedCategories": [
+            "Invoice_Computing_Document"
+          ],
+          "EnateInstance": {
+            "EnateID": "2c0c1a54-b793-454f-b27d-2b89b83c0795",
+            "Name": "Test",
+            "Subject": "CN=test",
+            "Url": "https://samltesting2/",
+            "EnateIdentityCertificateName": "test"
+          }
+        }
+
+      },
+      "PredictionResult": {
+        "type": "object",
+        "properties": {
+          "PacketGUID": {
+            "type": "string",
+            "description": "The unique ID of the Packet.",
+            "format": "uuid"
+          },
+          "CategoryLevel1": {
+            "type": "string",
+            "description": "The Category level 1 of the Packet."
+          },
+          "CategoryLevel2": {
+            "type": "string",
+            "description": "TThe Category level 2 of the Packet."
+          },
+          "CategoryLevel3": {
+            "type": "string",
+            "description": "The Category level 3 of the Packet."
+          },
+          "PredictionScore": {
+            "type": "number",
+            "description": "The Prediction Score."
+          }
+        },
+        "example": {
+          "PacketGUID": "a08a1a45-6b7c-42b2-8a20-3fa3f3f68b52",
+          "CategoryLevel1": "Technology",
+          "CategoryLevel2": "Hardware",
+          "CategoryLevel3": "Computer Components",
+          "PredictionScore": 0.84
+        }
+      },
+      "EnateIdentityResult": {
+        "required": [
+          "EnateID",
+          "Subject",
+          "URL",
+          "EnateIdentityCertificateName"
+        ],
+        "type": "object",
+        "properties": {
+          "EnateID": {
+            "type": "string",
+            "description": "The unique ID of the instance.",
+            "format": "uuid"
+          },
+          "Name": {
+            "type": "string",
+            "description": "Name of the instance."
+          },
+          "Subject": {
+            "type": "string",
+            "description": "Subject of the instance."
+          },
+          "URL": {
+            "type": "string",
+            "description": "Url of the instance."
+          },
+          "EnateIdentityCertificateName": {
+            "type": "string",
+            "description": "Certificate Nanme of the instance."
+          }
+        },
+        "example": {
+          "EnateID": "2c0c1a54-b793-454f-b27d-2b89b83c0795",
+          "Name": "Test",
+          "Subject": "CN=test",
+          "Url": "https://samltesting2/",
+          "EnateIdentityCertificateName": "test"
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyHeader": {
+        "type": "apiKey",
+        "name": "Ocp-Apim-Subscription-Key",
+        "in": "header"
+      },
+      "apiKeyQuery": {
+        "type": "apiKey",
+        "name": "subscription-key",
+        "in": "query"
+      }
+    }
+  },
+  "security": [
+    {
+      "apiKeyHeader": []
+    },
+    {
+      "apiKeyQuery": []
+    }
+  ]
+}

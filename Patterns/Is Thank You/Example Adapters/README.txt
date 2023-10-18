@@ -1,0 +1,5 @@
+The purpose of this code is to implement an Azure Function that serves as an API adapter, based on the provided OpenAPI specification. The API adapter communicates with a third-party technology and performs two key operations:
+
+Test Configuration: The `TestConfiguration` function tests whether the provided configuration details are valid and can be used to communicate with the third-party technology. It takes in a JSON payload that represents the configuration details (`AdapterConfigurationEntryResult`) and returns a response indicating whether the test was successful or not.
+
+Is Thank You Email Prediction: The `IsThankYou` function predicts whether a given email is a "thank you" email or not. It takes in a JSON payload that represents the communication details (`PacketCommunicationForIsThankYou`) of an email and returns a prediction result (`PredictionResult`) with a prediction score indicating the likelihood of the email being a "thank you" email.

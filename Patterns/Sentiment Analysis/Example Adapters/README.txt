@@ -1,0 +1,5 @@
+This code defines two Azure Functions: `testAdapterConfiguration` and `submitForSentimentAnalysis`, which can be triggered by specific HTTP requests.
+
+The `testAdapterConfiguration` function is triggered when an HTTP POST request is made to the "/TestConfiguration" endpoint. The function tests whether the configuration is valid for communicating with a third-party technology. It reads the request body, which should contain the configuration details to be tested. In this code, the request body is logged and a successful response is returned with the value `true`. However, the actual configuration test logic is not implemented in this code and needs to be added.
+
+The `submitForSentimentAnalysis` function is triggered when an HTTP POST request is made to the "/SentimentAnalysis" endpoint. The function sends a communication for sentiment analysis. It reads the request body, which should contain the communication details. In this code, the request body is logged, but the actual sentiment analysis logic is not implemented and needs to be added. After processing the request, a `204 No Content` response is returned to indicate a successful submission.

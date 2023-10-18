@@ -1,0 +1,7 @@
+This code represents an Azure Function implemented in C# that adheres to the provided OpenAPI specification. The Azure Function has two HTTP-triggered endpoints: `GetCategoryPredictions` and `TestAdapterConfiguration`.
+
+The `GetCategoryPredictions` endpoint is an HTTP POST request that takes an email's details as input and predicts a category for the email. The function deserializes the request body, which should contain an instance of the `PacketCommunicationForEmailTriage` data model defined in the OpenAPI specification. After performing the category prediction logic, the function constructs a `PredictionResult` object representing the prediction and returns it as the response.
+
+The `TestAdapterConfiguration` endpoint is also an HTTP POST request. It is used to test if the provided configuration details are valid and can be used to communicate with a third-party technology. The function deserializes the request body, which should contain an instance of the `AdapterConfigurationEntryResult` data model defined in the OpenAPI specification. After performing the configuration testing logic, the function returns a boolean value indicating whether the test was successful or not.
+
+The code defines the necessary data model classes based on the OpenAPI specification's `components/schemas` section. These classes reflect the structure and properties of the request and response payloads defined in the specification.

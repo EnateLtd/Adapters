@@ -1,0 +1,617 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Data Extraction Call Back Specifications",
+    "description": "The specification of the contract between the Enate Data Extraction API an Adapter that communicates with a third-party technology.",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://enatedigitalworker.azure-api.net/DataExtractionPattern/v1"
+    }
+  ],
+  "paths": {
+    "/ExternalCallBack": {
+      "post": {
+        "summary": "External Call Back",
+        "description": "Gets data extracted result from the third-party tool.",
+        "operationId": "externalCallBack",
+        "requestBody": {
+          "description": "Extracted result details from the document.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data Extraction Result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataExtractionResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request has not been completed because it contains invalid data."
+          },
+          "401": {
+            "description": "The client request has not been completed because it lacks valid authentication credentials for the requested resource."
+          },
+          "500": {
+            "description": "Request Failed due to internal server error."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ResponseDto": {
+        "required": [
+          "requestId",
+          "status",
+          "message",
+          "documents"
+        ],
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "description": "The unique identifier for the request."
+          },
+          "status": {
+            "type": "string",
+            "description": "The status of the response."
+          },
+          "message": {
+            "type": "string",
+            "description": "A descriptive message about the response."
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentDto"
+            },
+            "description": "A list of DocumentDto objects representing extracted documents."
+          }
+        },
+        "example": {
+          "requestId": "e3817b0b-0b8b-4bcb-8b1c-7299f4b2a315",
+          "status": "success",
+          "message": "Document extraction completed successfully.",
+          "documents": [
+            {
+              "id": "doc_001",
+              "name": "Sample Document",
+              "fileType": "pdf",
+              "status": "processed",
+              "subStatus": "verified",
+              "docType": "invoice",
+              "splitLevel": "single",
+              "startPage": 1,
+              "endPage": 5,
+              "docTypeHierarchy": [
+                {
+                  "userModelId": "model_001",
+                  "classificationName": "Invoice",
+                  "value": "Invoice_123",
+                  "confidence": 0.95
+                }
+              ],
+              "fields": [
+                {
+                  "id": "field_001",
+                  "name": "VendorName",
+                  "type": "string",
+                  "startIndex": 0,
+                  "endIndex": 10,
+                  "confidence": 0.98,
+                  "pageNumber": 1,
+                  "wordCoordinates": [
+                    {
+                      "id": "word_001",
+                      "startX": 100,
+                      "startY": 50,
+                      "endX": 200,
+                      "endY": 70,
+                      "startIndex": 0,
+                      "endIndex": 2,
+                      "word": "ABC"
+                    }
+                  ],
+                  "value": "ABC Corporation",
+                  "extractedUsing": "OCR",
+                  "order": 1
+                }
+              ],
+              "pages": [
+                {
+                  "id": "page_001",
+                  "pageNumber": 1,
+                  "imageUrl": "https://example.com/documents/sample_doc/page1",
+                  "pageFilePath": "/documents/sample_doc/page1.pdf",
+                  "imageFilePath": "/documents/sample_doc/page1.jpg",
+                  "rotation": "0 degrees",
+                  "optimizedImageUrl": "https://example.com/documents/sample_doc/page1_optimized"
+                }
+              ],
+              "documentExtractionStartDate": "2023-08-01T10:00:00Z",
+              "documentReceivedDate": "2023-08-01T09:45:00Z",
+              "sourceDocumentUrl": "https://example.com/documents/sample_doc.pdf",
+              "correctionUrl": "https://example.com/corrections/doc_001"
+            }
+          ]
+        }
+      },
+      "DocumentDto": {
+        "required": [
+          "id",
+          "name",
+          "fileType",
+          "status",
+          "subStatus",
+          "docType",
+          "splitLevel",
+          "startPage",
+          "endPage",
+          "docTypeHierarchy",
+          "fields",
+          "pages",
+          "documentExtractionStartDate",
+          "documentReceivedDate",
+          "sourceDocumentUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the document."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the document."
+          },
+          "fileType": {
+            "type": "string",
+            "description": "The file type of the document (e.g., pdf, docx)."
+          },
+          "status": {
+            "type": "string",
+            "description": "The status of the document (e.g., processed, in progress)."
+          },
+          "subStatus": {
+            "type": "string",
+            "description": "The sub-status of the document."
+          },
+          "docType": {
+            "type": "string",
+            "description": "The type of the document (e.g., invoice, receipt)."
+          },
+          "splitLevel": {
+            "type": "string",
+            "description": "The level at which the document was split (e.g., single, multiple)."
+          },
+          "startPage": {
+            "type": "integer",
+            "description": "The starting page number of the document."
+          },
+          "endPage": {
+            "type": "integer",
+            "description": "The ending page number of the document."
+          },
+          "docTypeHierarchy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocTypeHierarchyDto"
+            },
+            "description": "A list of DocTypeHierarchyDto objects representing the document's type hierarchy."
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldDto"
+            },
+            "description": "A list of FieldDto objects representing the extracted fields in the document."
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PageDto"
+            },
+            "description": "A list of PageDto objects representing the pages of the document."
+          },
+          "documentExtractionStartDate": {
+            "type": "string",
+            "description": "The date and time when document extraction started."
+          },
+          "documentReceivedDate": {
+            "type": "string",
+            "description": "The date and time when the document was received for processing."
+          },
+          "sourceDocumentUrl": {
+            "type": "string",
+            "description": "The URL or location of the source document."
+          },
+          "correctionUrl": {
+            "type": "string",
+            "description": "The URL or location for making corrections to the document."
+          }
+        }
+      },
+      "DocTypeHierarchyDto": {
+        "required": [
+          "userModelId",
+          "classificationName",
+          "value",
+          "confidence"
+        ],
+        "type": "object",
+        "properties": {
+          "userModelId": {
+            "type": "string",
+            "description": "The identifier of the user's model associated with the document type."
+          },
+          "classificationName": {
+            "type": "string",
+            "description": "The name of the document classification."
+          },
+          "value": {
+            "type": "string",
+            "description": "The value of the document type."
+          },
+          "confidence": {
+            "type": "number",
+            "description": "The confidence level of the document type identification."
+          }
+        },
+        "example": {
+          "userModelId": "model_001",
+          "classificationName": "Invoice",
+          "value": "Invoice_123",
+          "confidence": 0.95
+        }
+      },
+      "FieldDto": {
+        "required": [
+          "id",
+          "name",
+          "type",
+          "startIndex",
+          "endIndex",
+          "confidence",
+          "pageNumber",
+          "wordCoordinates",
+          "value",
+          "extractedUsing",
+          "order"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the field."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the field."
+          },
+          "type": {
+            "type": "string",
+            "description": "The data type of the field (e.g., string, number)."
+          },
+          "startIndex": {
+            "type": "integer",
+            "description": "The starting index of the field in the document content."
+          },
+          "endIndex": {
+            "type": "integer",
+            "description": "The ending index of the field in the document content."
+          },
+          "confidence": {
+            "type": "number",
+            "description": "The confidence level of the field extraction."
+          },
+          "pageNumber": {
+            "type": "integer",
+            "description": "The page number where the field was extracted."
+          },
+          "wordCoordinates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WordCoordinatesDto"
+            },
+            "description": "A list of WordCoordinatesDto objects representing the word-level coordinates of the field in the document."
+          },
+          "value": {
+            "type": "string",
+            "description": "The extracted value of the field."
+          },
+          "extractedUsing": {
+            "type": "string",
+            "description": "The method or technology used for field extraction (e.g., OCR, NLP)."
+          },
+          "order": {
+            "type": "integer",
+            "description": "The order or position of the field in relation to other fields."
+          }
+        },
+        "example": {
+          "id": "field_001",
+          "name": "VendorName",
+          "type": "string",
+          "startIndex": 0,
+          "endIndex": 10,
+          "confidence": 0.98,
+          "pageNumber": 1,
+          "wordCoordinates": [
+            {
+              "id": "word_001",
+              "startX": 100,
+              "startY": 50,
+              "endX": 200,
+              "endY": 70,
+              "startIndex": 0,
+              "endIndex": 2,
+              "word": "ABC"
+            }
+          ],
+          "value": "ABC Corporation",
+          "extractedUsing": "OCR",
+          "order": 1
+        }
+      },
+      "PageDto": {
+        "required": [
+          "id",
+          "pageNumber",
+          "imageUrl",
+          "pageFilePath",
+          "imageFilePath",
+          "rotation",
+          "optimizedImageUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the page."
+          },
+          "pageNumber": {
+            "type": "integer",
+            "description": "The page number of the document page."
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "The URL or location of the image of the page."
+          },
+          "pageFilePath": {
+            "type": "string",
+            "description": "The file path of the page within the document."
+          },
+          "imageFilePath": {
+            "type": "string",
+            "description": "The file path of the page's image."
+          },
+          "rotation": {
+            "type": "string",
+            "description": "The rotation angle of the page (e.g., '0 degrees')."
+          },
+          "optimizedImageUrl": {
+            "type": "string",
+            "description": "The URL or location of the optimized image of the page."
+          }
+        },
+        "example": {
+          "id": "page_001",
+          "pageNumber": 1,
+          "imageUrl": "https://example.com/documents/sample_doc/page1",
+          "pageFilePath": "/documents/sample_doc/page1.pdf",
+          "imageFilePath": "/documents/sample_doc/page1.jpg",
+          "rotation": "0 degrees",
+          "optimizedImageUrl": "https://example.com/documents/sample_doc/page1_optimized"
+        }
+      },
+      "WordCoordinatesDto": {
+        "required": [
+          "id",
+          "startX",
+          "startY",
+          "endX",
+          "endY",
+          "startIndex",
+          "endIndex",
+          "word"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the word."
+          },
+          "startX": {
+            "type": "integer",
+            "description": "The starting X-coordinate of the word on the document page."
+          },
+          "startY": {
+            "type": "integer",
+            "description": "The starting Y-coordinate of the word on the document page."
+          },
+          "endX": {
+            "type": "integer",
+            "description": "The ending X-coordinate of the word on the document page."
+          },
+          "endY": {
+            "type": "integer",
+            "description": "The ending Y-coordinate of the word on the document page."
+          },
+          "startIndex": {
+            "type": "integer",
+            "description": "The starting index of the word in the extracted text."
+          },
+          "endIndex": {
+            "type": "integer",
+            "description": "The ending index of the word in the extracted text."
+          },
+          "word": {
+            "type": "string",
+            "description": "The actual word extracted from the document."
+          }
+        },
+        "example": {
+          "id": "word_001",
+          "startX": 100,
+          "startY": 50,
+          "endX": 200,
+          "endY": 70,
+          "startIndex": 0,
+          "endIndex": 2,
+          "word": "ABC"
+        }
+      },
+      "DataExtractionResult": {
+        "required": [
+          "PacketGuid",
+          "FileGuid",
+          "Source",
+          "Confidence",
+          "JsonResult",
+          "FileResult"
+        ],
+        "type": "object",
+        "properties": {
+          "PacketGuid": {
+            "type": "string",
+            "description": "The unique ID of the packet.",
+            "format": "uuid"
+          },
+          "FileGuid": {
+            "type": "string",
+            "description": "The unique ID of the file.",
+            "format": "uuid"
+          },
+          "Source": {
+            "type": "integer",
+            "description": "The source of the file.",
+            "enum": [ 0, 1 ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "Attached to Packet",
+                "Attached to an Email"
+              ]
+            }
+          },
+          "Confidence": {
+            "type": "number",
+            "description": "The confidence level of the data extraction."
+          },
+          "JsonResult": {
+            "type": "string",
+            "description": "The JSON result of the data extraction."
+          },
+          "FileResult": {
+            "$ref": "#/components/schemas/FileDownloadResponse"
+          }
+        },
+        "example": {
+          "PacketGuid": "92958610-0D15-487D-A2AA-7293171BD95E",
+          "FileGuid": "92958610-0D15-487D-A2AA-7293171BD95E",
+          "Source": "AttachedToPacket",
+          "Confidence": 0.87,
+          "JsonResult": "{ \"key\": \"value\" }",
+          "FileResult": {
+            "FileData": "base64-encoded-data",
+            "FileName": "example.txt"
+          }
+        }
+      },
+      "FileDownloadResponse": {
+        "required": [
+          "FileData",
+          "FileName"
+        ],
+        "type": "object",
+        "properties": {
+          "FileData": {
+            "type": "string",
+            "format": "binary",
+            "description": "The file data in binary format (e.g., base64-encoded)."
+          },
+          "FileName": {
+            "type": "string",
+            "description": "The name of the downloaded file."
+          }
+        },
+        "example": {
+          "FileData": "SGVsbG8gd29ybGQh",
+          "FileName": "example.txt"
+        }
+      },
+      "EnateIdentityResult": {
+        "required": [
+          "EnateID",
+          "Subject",
+          "URL",
+          "EnateIdentityCertificateName"
+        ],
+        "type": "object",
+        "properties": {
+          "EnateID": {
+            "type": "string",
+            "description": "The unique ID of the instance.",
+            "format": "uuid"
+          },
+          "Name": {
+            "type": "string",
+            "description": "Name of the instance."
+          },
+          "Subject": {
+            "type": "string",
+            "description": "Subject of the instance."
+          },
+          "URL": {
+            "type": "string",
+            "description": "Url of the instance."
+          },
+          "EnateIdentityCertificateName": {
+            "type": "string",
+            "description": "Certificate Nanme of the instance."
+          }
+        },
+        "example": {
+          "EnateID": "2c0c1a54-b793-454f-b27d-2b89b83c0795",
+          "Name": "Test",
+          "Subject": "CN=test",
+          "Url": "https://samltesting2/",
+          "EnateIdentityCertificateName": "test"
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyHeader": {
+        "type": "apiKey",
+        "name": "Ocp-Apim-Subscription-Key",
+        "in": "header"
+      },
+      "apiKeyQuery": {
+        "type": "apiKey",
+        "name": "subscription-key",
+        "in": "query"
+      }
+    }
+  },
+  "security": [
+    {
+      "apiKeyHeader": []
+    },
+    {
+      "apiKeyQuery": []
+    }
+  ]
+}

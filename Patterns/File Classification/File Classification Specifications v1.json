@@ -1,0 +1,486 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "File Classification Specifications",
+    "description": "The specification of the contract between the Enate File Classification API an Adapter that communicates with a third-party technology.",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://enatedigitalworker.azure-api.net/FileClassificationPattern/v1"
+    }
+  ],
+  "paths": {
+    "/FileClassification": {
+      "post": {
+        "summary": "Get File Classification",
+        "description": "Classifies the file.",
+        "operationId": "getFileClassification",
+        "requestBody": {
+          "description": "File details to get the file classified.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FileDetailsForClassification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File Classification Result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileClassificationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request has not been completed because it contains invalid data."
+          },
+          "401": {
+            "description": "The client request has not been completed because it lacks valid authentication credentials for the requested resource."
+          },
+          "500": {
+            "description": "Request Failed due to internal server error."
+          }
+        }
+      }
+    },
+    "/ModelList": {
+      "post": {
+        "summary": "Get List of Models",
+        "description": "Returns a list of models configured.",
+        "operationId": "getModelList",
+        "requestBody": {
+          "description": "Adapter details to get model configurations.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelListRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of Models.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelListResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request has not been completed because it contains invalid data."
+          },
+          "401": {
+            "description": "The client request has not been completed because it lacks valid authentication credentials for the requested resource."
+          },
+          "404": {
+            "description": "No model can be found for the given ModelId."
+          },
+          "500": {
+            "description": "Request Failed due to internal server error."
+          }
+        }
+      }
+    },
+    "/TestConfiguration": {
+      "post": {
+        "summary": "Test Configuration",
+        "description": "Tests that the configuration is valid and can be used to communicate with the third-party technology.",
+        "operationId": "testAdapterConfiguration",
+        "requestBody": {
+          "description": "Configuration details to test.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdapterConfigurationEntryResult"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Test was successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestConfigurationResults"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request has not been completed because it contains invalid data."
+          },
+          "401": {
+            "description": "The client request has not been completed because it lacks valid authentication credentials for the requested resource."
+          },
+          "500": {
+            "description": "Request Failed due to internal server error."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AdapterConfigurationEntryResult": {
+        "required": [
+          "Name",
+          "Value"
+        ],
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Name of the Configuration field."
+          },
+          "Value": {
+            "type": "object",
+            "description": "Value of the Configuration field."
+          }
+        },
+        "example": [
+          {
+            "Name": "Url",
+            "Value": "https://api.uat.infrrd.cloud"
+          },
+          {
+            "Name": "AccountId",
+            "Value": "df029c56-310a-4bab-ae30-f04df57651b8"
+          },
+          {
+            "Name": "Models",
+            "Value": [
+              [
+                {
+                  "Name": "ModelId",
+                  "Value": "d5101f3c-45c4-44e6-aaa6-28bbb8e35f19"
+                },
+                {
+                  "Name": "APIKey",
+                  "Value": "50008774-bc23-47a8-b6eb-61fb4819a5e4"
+                },
+                {
+                  "Name": "ModelName",
+                  "Value": "Model1"
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      "TestConfigurationResults": {
+        "required": [
+          "Success",
+          "Messages"
+        ],
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean",
+            "description": "Indicates if the test configuration was successful."
+          },
+          "Messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestConfigurationResultMessage"
+            },
+            "description": "List of messages describing the test configuration results."
+          }
+        },
+        "example": {
+          "Success": true,
+          "Messages": [
+            {
+              "Parameters": [ "setting-name" ],
+              "Type": "MissingOrIncorrectInformation"
+            },
+            {
+              "Parameters": [],
+              "Type": "ConfigurationEmpty"
+            }
+          ]
+        }
+      },
+      "TestConfigurationResultMessage": { 
+        "type": "object",
+        "properties": {
+          "Parameters": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Parameters for the message."
+          },
+          "Type": {
+            "type": "string",
+            "enum": [
+              "MissingOrIncorrectInformation",
+              "ConfigurationEmpty",
+              "UnknownError",
+              "TableRowFailure",
+              "TableRowUnknownError"
+            ],
+            "description": "Type of the test configuration result message."
+          },
+          "Message": {
+            "type": "string",
+            "description": "Formatted message based on the type and parameters."
+          }
+        }
+      },
+      "ModelListRequest": {
+        "required": [
+          "AdapterId",
+          "ConfigurationId"
+        ],
+        "type": "object",
+        "properties": {
+          "AdapterId": {
+            "type": "string",
+            "description": "The unique ID of the Adapter.",
+            "format": "uuid"
+          },
+          "ConfigurationId": {
+            "type": "string",
+            "description": "The unique ID of the Configuration.",
+            "format": "uuid"
+          }
+        },
+        "example": {
+          "AdapterId": "92958610-0D15-487D-A2AA-7293171BD95E",
+          "ConfigurationId": "92958610-0D15-487D-A2AA-7293171BD95E"
+        }
+      },
+      "ModelListResult": {
+        "type": "object",
+        "properties": {
+          "Models": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Model"
+            }
+          }
+        },
+        "required": [ "Models" ],
+        "example": {
+          "Models": [
+            {
+              "ModelName": "exampleModel1",
+              "ModelId": "92958610-0D15-487D-A2AA-7293171BD95E"
+            },
+            {
+              "ModelName": "exampleModel2",
+              "ModelId": "C75E7F62-9E5C-4F52-BD48-184E3A5A5F88"
+            }
+          ]
+        }
+      },
+      "Model": {
+        "type": "object",
+        "properties": {
+          "ModelName": {
+            "type": "string",
+            "description": "The name of the model."
+          },
+          "ModelId": {
+            "type": "string",
+            "description": "The unique ID of the model.",
+            "format": "uuid"
+          }
+        },
+        "required": [ "ModelName", "ModelId" ],
+        "example": {
+          "ModelName": "exampleModel1",
+          "ModelId": "92958610-0D15-487D-A2AA-7293171BD95E"
+        }
+      },
+      "FileDetailsForClassification": {
+        "required": [
+          "AdapterId",
+          "ConfigurationId",
+          "PacketGuid",
+          "FileGuid"
+        ],
+        "type": "object",
+        "properties": {
+          "AdapterId": {
+            "type": "string",
+            "description": "The unique ID of the Adapter.",
+            "format": "uuid"
+          },
+          "ConfigurationId": {
+            "type": "string",
+            "description": "The unique ID of the Configuration.",
+            "format": "uuid"
+          },
+          "PacketGuid": {
+            "type": "string",
+            "description": "The unique ID of the Packet.",
+            "format": "uuid"
+          },
+          "FileGuid": {
+            "type": "string",
+            "description": "The unique ID of the file.",
+            "format": "uuid"
+          },
+          "ModelId": {
+            "type": "string",
+            "description": "The unique ID of the Model.",
+            "format": "uuid"
+          },
+          "Source": {
+            "type": "integer",
+            "description": "The source of the file.",
+            "enum": [ 0, 1 ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "Attached to Packet",
+                "Attached to an Email"
+              ]
+            }
+          },
+          "EnateInstance": {
+            "$ref": "#/components/schemas/EnateIdentityResult"
+          }
+        },
+        "example":  {
+          "AdapterId": "3e94b3d8-e105-46b7-9267-df61050fc91d",
+          "ConfigurationId": "d45f53fe-bba5-49af-9a36-6423d10b429d",
+          "FileGuid": "92958610-0D15-487D-A2AA-7293171BD95E",
+          "PacketGuid": "AE395CEB-9DC5-466F-9D7E-424408AE76AB",
+          "Source": "Attached to an Email",
+          "ModelId": "AE395CEB-9DC5-466F-9D7E-424408AE76AB",
+          "EnateInstance": {
+            "EnateID": "2c0c1a54-b793-454f-b27d-2b89b83c0795",
+            "Name": "Test",
+            "Subject": "CN=test",
+            "Url": "https://samltesting2/",
+            "EnateIdentityCertificateName": "test"
+          }
+        }
+      },
+      "FileClassificationResult": {
+        "required": [
+          "PacketGuid",
+          "FileGuid",
+          "Tags"
+        ],
+        "type": "object",
+        "properties": {
+          "PacketGuid": {
+            "type": "string",
+            "description": "The unique ID of the packet.",
+            "format": "uuid"
+          },
+          "FileGuid": {
+            "type": "string",
+            "description": "The unique ID of the file.",
+            "format": "uuid"
+          },
+          "Tags": {
+            "$ref": "#/components/schemas/Tags"
+          }
+        },
+        "example": {
+          "PacketGuid": "92958610-0D15-487D-A2AA-7293171BD95E",
+          "FileGuid": "92958610-0D15-487D-A2AA-7293171BD95E",
+          "Tags": {
+            "Name": "Pay Slip",
+            "Confidence": 0.87
+          }
+        }
+      },
+      "Tags": {
+        "required": [
+          "Name",
+          "Confidence"
+        ],
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Name of the tag."
+          },
+          "Confidence": {
+            "type": "number",
+            "format": "double",
+            "description": "Confidence of the tag."
+          }
+        },
+        "example": {
+          "Name": "Pay Slip",
+          "Confidence": 0.87
+        }
+      },
+      "EnateIdentityResult": {
+        "required": [
+          "EnateID",
+          "Subject",
+          "URL",
+          "EnateIdentityCertificateName"
+        ],
+        "type": "object",
+        "properties": {
+          "EnateID": {
+            "type": "string",
+            "description": "The unique ID of the instance.",
+            "format": "uuid"
+          },
+          "Name": {
+            "type": "string",
+            "description": "Name of the instance."
+          },
+          "Subject": {
+            "type": "string",
+            "description": "Subject of the instance."
+          },
+          "URL": {
+            "type": "string",
+            "description": "Url of the instance."
+          },
+          "EnateIdentityCertificateName": {
+            "type": "string",
+            "description": "Certificate Nanme of the instance."
+          }
+        },
+        "example": {
+          "EnateID": "2c0c1a54-b793-454f-b27d-2b89b83c0795",
+          "Name": "Test",
+          "Subject": "CN=test",
+          "Url": "https://samltesting2/",
+          "EnateIdentityCertificateName": "test"
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyHeader": {
+        "type": "apiKey",
+        "name": "Ocp-Apim-Subscription-Key",
+        "in": "header"
+      },
+      "apiKeyQuery": {
+        "type": "apiKey",
+        "name": "subscription-key",
+        "in": "query"
+      }
+    }
+  },
+  "security": [
+    {
+      "apiKeyHeader": []
+    },
+    {
+      "apiKeyQuery": []
+    }
+  ]
+}
