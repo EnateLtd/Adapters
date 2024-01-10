@@ -1,0 +1,64 @@
+{
+	"info": {
+		"_postman_id": "32a4920a-e531-4e3a-9764-f2307eb6169a",
+		"name": "DataExtractionEndpointMock",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "11277948"
+	},
+	"item": [
+		{
+			"name": "DataExtractionCallBack",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\r\n    \"AdapterId\": \"77758610-0D22-487D-A2CC-7293171BD97J\",\r\n    \"DataExtractionResult\": {\r\n        \"PacketGuid\":\"AE395CEB-9DC5-466F-9D7E-424408AE76AB\",\r\n        \"FileGuid\":\"92958610-0D15-487D-A2AA-7293171BD95E\",\r\n        \"Source\":0,\r\n        \"Confidence\":0.9,\r\n        \"JsonResult\":\"{ \\\"Invoice Number\\\": \\\"INV-3337\\\", \\\"Order Number\\\":\\\"12345\\\",\\\"Total\\\":\\\"$93.50\\\" }\",\r\n        \"FileResult\": {\r\n            \"FileData\": \"JVBERi0xLjMKJcTl8uXrp/Og0MTGCjQgMCBvYmoKPDwg...\",\r\n            \"FileName\": \"example_invoice.pdf\"\r\n        }\r\n    },\r\n    \"EnateInstance\": {\r\n        \"EnateID\": \"2c0c1a54-b793-454f-b27d-2b89b83c0795\",\r\n        \"Name\": \"Test\",\r\n        \"Subject\": \"CN=test\",\r\n        \"Url\": \"https://test/\",\r\n        \"EnateIdentityCertificateName\": \"test\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/DataExtractionCallBack"
+			},
+			"response": []
+		},
+		{
+			"name": "GetFileForExtraction",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"FileGuid\": \"92958610-0D15-487D-A2AA-7293171BD95E\",\r\n    \"PacketGuid\": \"AE395CEB-9DC5-466F-9D7E-424408AE76AB\",\r\n    \"EnateInstance\": {\r\n        \"EnateID\": \"2c0c1a54-b793-454f-b27d-2b89b83c0795\",\r\n        \"Name\": \"Test\",\r\n        \"Subject\": \"CN=test\",\r\n        \"Url\": \"https://samltesting2/\",\r\n        \"EnateIdentityCertificateName\": \"test\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/GetFileForExtraction"
+			},
+			"response": []
+		},
+		{
+			"name": "GetModelList",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/GetModelList"
+			},
+			"response": []
+		}
+	]
+}
